@@ -1,43 +1,33 @@
-Home Lab documentation 02/2026
+# Home Lab
+Personal network and self-hosted infrastructure focused on security, privacy, and hands-on learning. Everything here is something I built because I wanted to understand how it worked, not because someone told me to.
 
-# ZimaBoard #
-The secondary server used to run software I'm just curious about experimenting with or is lower
-priority and runs on a 'ZimaBoard' single board computer. My model is the ZimaBoard 832 equipped
-with an Intel N3450 and 8GB of ram. This server runs Debian 6.1.159-1 and I manage it headlessly.
-Running within docker on this server is pi-hole, karakeep, and kiwix as well as a docker stack
-with an isolated virtual netowork adapter that forces all trafic through a gluetun wireguard vpn.
-This container allows secure use of qbittorrent to run as a seed box as well as automatic scanning
-of all files downloaded with ClamAV. Pi-hole is configured to handle the network dns and has
-somewhat lax rules in favor of compatability primarily filtering out malware before it can make it
-to device.
+## Security & Privacy Server — ZimaBoard
+The core of my security infrastructure runs on a ZimaBoard 832 (Intel N3450, 8GB RAM) running Debian 6.1.159-1, managed entirely headlessly. Within Docker I'm running:
 
-# T-Mobile home internet #
-T-Mobile Home Internet is the best value in the area but introduces some challenges in regard
-to access outside of the LAN. My solution to this has been leveraging Tailscale for external
-access.
+- **Pi-hole** handles DNS for the entire network. Rules are tuned somewhat lax in favor of compatibility but filter known malware domains before traffic ever reaches a device.
+- **Isolated network stack** — a Docker compose stack running behind its own virtual network adapter that forces all outbound traffic through a Gluetun WireGuard VPN tunnel. Nothing in this stack touches the open internet without encryption. This is where I experiment with services that I want fully isolated from my primary network and identity.
+- **ClamAV** automatically scans all files that pass through the isolated stack.
+- **Karakeep** and **Kiwix** for bookmarking and offline knowledge archiving.
 
-# Tailscale #
-Due to the dynamic IP address provided by my ISP conventional solutions for out WAN serving 
-are impossible to impliment in practical terms. As such I turned to tailscale which allows a
-full coverage vpn tunnel from my verfied device back into my home network allowing me to 
-interact with and manage the services I run at home from anywhere in the world both privately
-and securely.
+## Remote Access — Tailscale
+T-Mobile Home Internet is the best value in my area but assigns a dynamic IP behind CGNAT, making conventional port forwarding or dynamic DNS impractical. My solution is Tailscale, which provides an encrypted tunnel from any verified device back into my home network. This allows me to interact with and manage every service I run at home from anywhere in the world, privately and securely.
 
-# TP Link Deco XE75 #
-The Deco mesh wifi system provides wifi-6e which crucially supports 6ghz wifi allowing lower
-latency across the network and higher wireless bandwidth in addition to increasing the range
-of available frequencies for the network. My network uses two of these units connected with 
-Cat 6e cable saturating their 1gb ethernet ports.
+## Network Infrastructure
 
-# Unmanaged switches #
-Each Deco unit runs directly into an unmanaged switch for connection to latency sensitive
-devices.
+### TP-Link Deco XE75
+Mesh WiFi system supporting WiFi 6E including the 6GHz band for lower latency and higher bandwidth. Two units connected with Cat 6e cable saturating their 1Gb ethernet ports as a wired backhaul.
 
-# Asustor NAS #
-Mass data storage as well as tailscale access and media serving is handled by the asustor NAS.
-The Nas has been upgraded from the default 4gb of memory to 16gb allowing for higher headroom
-and crucially more space to cache improving response times for certain applications. Within
-Docker I'm running Portainer, Tailscale, Plex, Mealie, Home-Assistant, and CalibreWeb. For
-convinience and stability this server is managed primarily through the WebUI provided with the
-default operating system.
+### Unmanaged Switches
+Each Deco unit feeds into an unmanaged switch for hardwired connections to latency-sensitive devices.
 
+## Storage & Media — Asustor NAS
+Handles mass data storage, media serving, and acts as a secondary Tailscale node. Upgraded from the default 4GB to 16GB of memory for better caching and headroom. Running within Docker:
+
+- **Portainer** for container management
+- **Tailscale** for remote access
+- **Plex** for media serving
+- **Mealie** for recipe management
+- **Home Assistant** for home automation
+- **Calibre-Web** for ebook management
+
+Managed primarily through the manufacturer's WebUI for convenience and stability.
